@@ -75,6 +75,12 @@ with tab1:
     sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
     st.pyplot(fig)
 
+    # Heatmap of correlations
+    st.subheader("Heatmap of Correlations")
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
+    st.pyplot(fig)
+
 with tab2:
     st.header("Modeling")
 
