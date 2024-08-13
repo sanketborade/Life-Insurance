@@ -1,139 +1,141 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import OneHotEncoder
 
-    "import streamlit as st\n",
-    "import pandas as pd\n",
-    "import matplotlib.pyplot as plt\n",
-    "import seaborn as sns\n",
-    "from sklearn.model_selection import train_test_split\n",
-    "from sklearn.preprocessing import StandardScaler\n",
-    "from sklearn.pipeline import Pipeline\n",
-    "from sklearn.compose import ColumnTransformer\n",
-    "from sklearn.impute import SimpleImputer\n",
-    "from sklearn.metrics import accuracy_score\n",
-    "from sklearn.linear_model import LogisticRegression\n",
-    "from sklearn.tree import DecisionTreeClassifier\n",
-    "from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier\n",
-    "from sklearn.svm import SVC\n",
-    "from sklearn.neighbors import KNeighborsClassifier\n",
-    "from sklearn.naive_bayes import GaussianNB\n",
-    "from sklearn.preprocessing import OneHotEncoder\n",
-    "\n",
-    "# Load the dataset\n",
-    "data = pd.read_csv('approved_data.csv')\n",
-    "st.write(\"Dataset loaded successfully!\")\n",
-    "\n",
-    "# Function to evaluate models\n",
-    "def evaluate_models(models, X_train, y_train, X_test, y_test):\n",
-    "    results = {}\n",
-    "    model_names = list(models.keys())  # Create a list of model names to iterate over\n",
-    "    for name in model_names:\n",
-    "        model = models[name]\n",
-    "        pipeline = Pipeline(steps=[('preprocessor', preprocessor),\n",
-    "                                   ('classifier', model)])\n",
-    "        pipeline.fit(X_train, y_train)\n",
-    "        y_pred = pipeline.predict(X_test)\n",
-    "        accuracy = accuracy_score(y_test, y_pred)\n",
-    "        results[name] = accuracy\n",
-    "    return results\n",
-    "\n",
-    "# Streamlit interface\n",
-    "st.title('Model Evaluation for Life Insurance Underwriting')\n",
-    "\n",
-    "# Create tabs\n",
-    "tab1, tab2, tab3 = st.tabs([\"EDA\", \"Modeling\", \"Scoring\"])\n",
-    "\n",
-    "with tab1:\n",
-    "    st.header(\"Exploratory Data Analysis (EDA)\")\n",
-    "\n",
-    "    # Display basic dataset information\n",
-    "    st.subheader(\"Basic Information\")\n",
-    "    st.write(\"Dataset shape:\", data.shape)\n",
-    "    st.write(\"Dataset columns:\", data.columns.tolist())\n",
-    "\n",
-    "    # Summary statistics\n",
-    "    st.subheader(\"Summary Statistics\")\n",
-    "    st.write(data.describe())\n",
-    "\n",
-    "    # Missing values\n",
-    "    st.subheader(\"Missing Values\")\n",
-    "    st.write(data.isnull().sum())\n",
-    "\n",
-    "    # Target distribution\n",
-    "    st.subheader(\"Target Distribution\")\n",
-    "    fig, ax = plt.subplots()\n",
-    "    sns.countplot(x='Approved', data=data, ax=ax)\n",
-    "    st.pyplot(fig)\n",
-    "\n",
-    "    # Pairplot for numerical features\n",
-    "    st.subheader(\"Pairplot\")\n",
-    "    if len(data.select_dtypes(include=['int64', 'float64']).columns) > 1:\n",
-    "        fig = sns.pairplot(data, hue='Approved')\n",
-    "        st.pyplot(fig)\n",
-    "    else:\n",
-    "        st.write(\"Not enough numerical features for pairplot.\")\n",
-    "\n",
-    "    # Correlation Matrix\n",
-    "    st.subheader(\"Correlation Matrix\")\n",
-    "    corr = data.corr()\n",
-    "    fig, ax = plt.subplots(figsize=(10, 8))\n",
-    "    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)\n",
-    "    st.pyplot(fig)\n",
-    "\n",
-    "    # Heatmap of correlations\n",
-    "    st.subheader(\"Heatmap of Correlations\")\n",
-    "    fig, ax = plt.subplots(figsize=(12, 8))\n",
-    "    sns.heatmap(corr, annot=True, fmt=\".2f\", cmap=\"YlGnBu\", ax=ax)\n",
-    "    st.pyplot(fig)\n",
-    "\n",
-    "with tab2:\n",
-    "    st.header(\"Modeling\")\n",
-    "\n",
-    "    # Separating features and target variable\n",
-    "    X = data.drop(columns=['Approved'])\n",
-    "    y = data['Approved']\n",
-    "\n",
-    "    # Identify categorical and numerical columns\n",
-    "    numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns\n",
-    "    categorical_cols = X.select_dtypes(include=['object']).columns\n",
-    "\n",
-    "    # Preprocessing pipelines for numerical and categorical features\n",
-    "    numerical_pipeline = Pipeline(steps=[\n",
-    "        ('imputer', SimpleImputer(strategy='median')),\n",
-    "        ('scaler', StandardScaler())\n",
-    "    ])\n",
-    "\n",
-    "    categorical_pipeline = Pipeline(steps=[\n",
-    "        ('imputer', SimpleImputer(strategy='most_frequent')),\n",
-    "        ('onehot', OneHotEncoder(handle_unknown='ignore'))"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "2e900002-53bd-4eeb-96ca-d2fd81065ee2",
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python 3 (ipykernel)",
-   "language": "python",
-   "name": "python3"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.11.7"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
-}
+# Load the dataset
+data = pd.read_csv('approved_data.csv')
+st.write("Dataset loaded successfully!")
+
+# Function to evaluate models
+def evaluate_models(models, X_train, y_train, X_test, y_test):
+    results = {}
+    model_names = list(models.keys())  # Create a list of model names to iterate over
+    for name in model_names:
+        model = models[name]
+        pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                                   ('classifier', model)])
+        pipeline.fit(X_train, y_train)
+        y_pred = pipeline.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        results[name] = accuracy
+    return results
+
+# Streamlit interface
+st.title('Model Evaluation for Life Insurance Underwriting')
+
+# Create tabs
+tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
+
+with tab1:
+    st.header("Exploratory Data Analysis (EDA)")
+
+    # Display basic dataset information
+    st.subheader("Basic Information")
+    st.write("Dataset shape:", data.shape)
+    st.write("Dataset columns:", data.columns.tolist())
+
+    # Summary statistics
+    st.subheader("Summary Statistics")
+    st.write(data.describe())
+
+    # Missing values
+    st.subheader("Missing Values")
+    st.write(data.isnull().sum())
+
+    # Target distribution
+    st.subheader("Target Distribution")
+    fig, ax = plt.subplots()
+    sns.countplot(x='Approved', data=data, ax=ax)
+    st.pyplot(fig)
+
+    # Pairplot for numerical features
+    st.subheader("Pairplot")
+    if len(data.select_dtypes(include=['int64', 'float64']).columns) > 1:
+        fig = sns.pairplot(data, hue='Approved')
+        st.pyplot(fig)
+    else:
+        st.write("Not enough numerical features for pairplot.")
+
+    # Correlation Matrix
+    st.subheader("Correlation Matrix")
+    corr = data.corr()
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
+    st.pyplot(fig)
+
+    # Heatmap of correlations
+    st.subheader("Heatmap of Correlations")
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.heatmap(corr, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
+    st.pyplot(fig)
+
+with tab2:
+    st.header("Modeling")
+
+    # Separating features and target variable
+    X = data.drop(columns=['Approved'])
+    y = data['Approved']
+
+    # Identify categorical and numerical columns
+    numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
+    categorical_cols = X.select_dtypes(include=['object']).columns
+
+    # Preprocessing pipelines for numerical and categorical features
+    numerical_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())
+    ])
+
+    categorical_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='most_frequent')),
+        ('onehot', OneHotEncoder(handle_unknown='ignore'))
+    ])
+
+    # Combine preprocessing pipelines
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numerical_pipeline, numerical_cols),
+            ('cat', categorical_pipeline, categorical_cols)
+        ]
+    )
+
+    # Define the models to evaluate
+    models = {
+        'Logistic Regression': LogisticRegression(max_iter=1000),
+        'Decision Tree': DecisionTreeClassifier(),
+        'Random Forest': RandomForestClassifier(),
+        'Gradient Boosting': GradientBoostingClassifier(),
+        'Support Vector Machine': SVC(),
+        'K-Nearest Neighbors': KNeighborsClassifier(),
+        'Naive Bayes': GaussianNB()
+    }
+
+    st.write("Models are defined and ready for evaluation.")
+
+with tab3:
+    st.header("Scoring")
+
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Evaluate the models
+    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
+
+    # Display results
+    results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
+    st.write("Model Accuracies:")
+    st.write(results_df)
