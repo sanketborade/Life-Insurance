@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -14,131 +14,114 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.preprocessing import OneHotEncoder
 
-# Load the dataset
-data = pd.read_csv('approved_data.csv')
+# Function to evaluate models
+def evaluate_models(models, X_train, y_train, X_test, y_test):
+    results = {}
+    for name, model in models.items():
+        pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                                   ('classifier', model)])
+        pipeline.fit(X_train, y_train)
+        y_pred = pipeline.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        results[name] = accuracy
+    return results
 
-# Title of the Streamlit app
-st.title("Life Insurance Approval Prediction")
+# Streamlit interface
+st.title('Model Evaluation for Life Insurance Underwriting')
 
-# Create tabs
-tabs = st.tabs(["EDA", "Modeling", "Scoring"])
+# Upload the dataset
+uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
+if uploaded_file is not None:
+    data = pd.read_csv(uploaded_file)
+    st.write("Dataset loaded successfully!")
 
-with tabs[0]:
-    st.header("Exploratory Data Analysis (EDA)")
-    
-    # Display the dataset
-    st.write("Dataset Overview:")
-    st.write(data.head())
-    
-    # Show basic information about the dataset
-    st.write("Basic Information:")
-    st.write(data.info())
-    
-    # Show summary statistics
-    st.write("Summary Statistics:")
-    st.write(data.describe())
-    
-    # Show the distribution of the target variable
-    st.write("Distribution of Approved Target:")
-    st.bar_chart(data['Approved'].value_counts())
-    
-    # Check for missing values
-    st.write("Missing Values:")
-    st.write(data.isnull().sum())
+    # Create tabs
+    tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
 
-    # Correlation matrix
-    st.write("Correlation Matrix:")
-    st.write(data.corr())
-    
-    # Correlation Heatmap using seaborn
-    st.write("Correlation Heatmap:")
-    plt.figure(figsize=(10, 6))
-    sns.heatmap(data.corr(), annot=True, cmap='coolwarm', cbar=True)
-    st.pyplot(plt)  # Display the plot in Streamlit
+    with tab1:
+        st.header("Exploratory Data Analysis (EDA)")
 
-with tabs[1]:
-    st.header("Modeling")
+        # Display basic dataset information
+        st.subheader("Basic Information")
+        st.write("Dataset shape:", data.shape)
+        st.write("Dataset columns:", data.columns.tolist())
 
-    # Separating features and target variable
-    X = data.drop(columns=[ 'Approved'])  # Ensure Customer ID is not included
-    y = data['Approved']
+        # Summary statistics
+        st.subheader("Summary Statistics")
+        st.write(data.describe())
 
-    # Identify categorical and numerical columns
-    numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
-    categorical_cols = X.select_dtypes(include=['object']).columns
+        # Missing values
+        st.subheader("Missing Values")
+        st.write(data.isnull().sum())
 
-    # Preprocessing pipelines for numerical and categorical features
-    numerical_pipeline = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())
-    ])
+        # Target distribution
+        st.subheader("Target Distribution")
+        fig, ax = plt.subplots()
+        sns.countplot(x='Approved', data=data, ax=ax)
+        st.pyplot(fig)
 
-    categorical_pipeline = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='most_frequent')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))
-    ])
+        # Pairplot for numerical features
+        st.subheader("Pairplot")
+        if len(data.select_dtypes(include=['int64', 'float64']).columns) > 1:
+            fig = sns.pairplot(data, hue='Approved')
+            st.pyplot(fig)
+        else:
+            st.write("Not enough numerical features for pairplot.")
 
-    # Combine preprocessing pipelines
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', numerical_pipeline, numerical_cols),
-            ('cat', categorical_pipeline, categorical_cols)
-        ]
-    )
+        # Correlation Matrix
+        st.subheader("Correlation Matrix")
+        corr = data.corr()
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
+        st.pyplot(fig)
 
-    # Define the models to evaluate
-    models = {
-        'Logistic Regression': LogisticRegression(max_iter=1000),
-        'Decision Tree': DecisionTreeClassifier(),
-        'Random Forest': RandomForestClassifier(),
-        'Gradient Boosting': GradientBoostingClassifier(),
-        'Support Vector Machine': SVC(),
-        'K-Nearest Neighbors': KNeighborsClassifier(),
-        'Naive Bayes': GaussianNB()
-    }
+    with tab2:
+        st.header("Modeling")
 
-    # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        # Separating features and target variable
+        X = data.drop(columns=['Approved'])
+        y = data['Approved']
 
-    # Function to evaluate models
-    def evaluate_models(models, X_train, y_train, X_test, y_test):
-        results = {}
-        for name, model in models.items():
-            pipeline = Pipeline(steps=[('preprocessor', preprocessor),
-                                       ('classifier', model)])
-            pipeline.fit(X_train, y_train)
-            y_pred = pipeline.predict(X_test)
-            accuracy = accuracy_score(y_test, y_pred)
-            results[name] = accuracy
-        return results
+        # Identify categorical and numerical columns
+        numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
+        categorical_cols = X.select_dtypes(include=['object']).columns
 
-    # Evaluate the models
-    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
+        # Preprocessing pipelines for numerical and categorical features
+        numerical_pipeline = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy='median')),
+            ('scaler', StandardScaler())
+        ])
 
-    # Display results in a table format
-    results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
-    st.write("Model Accuracy Comparison:")
-    st.table(results_df)
+        categorical_pipeline = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy='most_frequent')),
+            ('onehot', OneHotEncoder(handle_unknown='ignore'))
+        ])
 
-    # Show a bar chart of the results
-    st.bar_chart(results_df)
+        # Combine preprocessing pipelines
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', numerical_pipeline, numerical_cols),
+                ('cat', categorical_pipeline, categorical_cols)
+            ]
+        )
 
-with tabs[2]:
-    st.header("Scoring")
+        # Define the models to evaluate
+        models = {
+            'Logistic Regression': LogisticRegression(max_iter=1000),
+            'Decision Tree': DecisionTreeClassifier(),
+            'Random Forest': RandomForestClassifier(),
+            'Gradient Boosting': GradientBoostingClassifier(),
+            'Support Vector Machine': SVC(),
+            'K-Nearest Neighbors': KNeighborsClassifier(),
+            'Naive Bayes': GaussianNB()
+        }
 
-    st.write("This section could include additional scoring metrics, model performance on validation data, or even a tool to allow users to input new data and receive predictions.")
-    # Example of scoring logic (add actual implementation as needed)
-    selected_model_name = st.selectbox("Select Model for Scoring", list(models.keys()))
-    selected_model = models[selected_model_name]
-    
-    # Fit the selected model
-    pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('classifier', selected_model)])
-    pipeline.fit(X_train, y_train)
-    
-    # Score the model on the test set
-    score = pipeline.score(X_test, y_test)
-    st.write(f"Accuracy of {selected_model_name} on test data: {score:.2f}")
-    
-    # Add an option for user input and prediction (optional)
-    # This could include a form or widgets to collect input and predict approval status
+        st.write("Models are defined and ready for evaluation.")
+
+    with tab3:
+        st.header("Scoring")
+
+        # Split the data into training and testing sets
+        X_train, X_test,
