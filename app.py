@@ -34,7 +34,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
     return results
 
 # Streamlit interface
-st.title('Model Evaluation for Life Insurance Underwriting')
+st.title('Life Insurance Underwriting')
 
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
