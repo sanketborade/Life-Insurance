@@ -23,8 +23,7 @@ st.write("Dataset loaded successfully!")
 # Function to evaluate models
 def evaluate_models(models, X_train, y_train, X_test, y_test):
     results = {}
-    model_names = list(models.keys())  # Create a list of model names to iterate over
-    for name in model_names:
+    for name in models.keys():  # Create a list of model names to iterate over
         model = models[name]
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
                                    ('classifier', model)])
