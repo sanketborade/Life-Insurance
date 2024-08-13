@@ -16,6 +16,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import OneHotEncoder
 
+# Load the dataset
+data = pd.read_csv('approved_data.csv')
+st.write("Dataset loaded successfully!")
+
 # Function to evaluate models
 def evaluate_models(models, X_train, y_train, X_test, y_test):
     results = {}
@@ -31,97 +35,99 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
 # Streamlit interface
 st.title('Model Evaluation for Life Insurance Underwriting')
 
-# Upload the dataset
-uploaded_file = st.file_uploader("Upload your CSV file", type="csv")
-if uploaded_file is not None:
-    data = pd.read_csv(uploaded_file)
-    st.write("Dataset loaded successfully!")
+# Create tabs
+tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
 
-    # Create tabs
-    tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
+with tab1:
+    st.header("Exploratory Data Analysis (EDA)")
 
-    with tab1:
-        st.header("Exploratory Data Analysis (EDA)")
+    # Display basic dataset information
+    st.subheader("Basic Information")
+    st.write("Dataset shape:", data.shape)
+    st.write("Dataset columns:", data.columns.tolist())
 
-        # Display basic dataset information
-        st.subheader("Basic Information")
-        st.write("Dataset shape:", data.shape)
-        st.write("Dataset columns:", data.columns.tolist())
+    # Summary statistics
+    st.subheader("Summary Statistics")
+    st.write(data.describe())
 
-        # Summary statistics
-        st.subheader("Summary Statistics")
-        st.write(data.describe())
+    # Missing values
+    st.subheader("Missing Values")
+    st.write(data.isnull().sum())
 
-        # Missing values
-        st.subheader("Missing Values")
-        st.write(data.isnull().sum())
+    # Target distribution
+    st.subheader("Target Distribution")
+    fig, ax = plt.subplots()
+    sns.countplot(x='Approved', data=data, ax=ax)
+    st.pyplot(fig)
 
-        # Target distribution
-        st.subheader("Target Distribution")
-        fig, ax = plt.subplots()
-        sns.countplot(x='Approved', data=data, ax=ax)
+    # Pairplot for numerical features
+    st.subheader("Pairplot")
+    if len(data.select_dtypes(include=['int64', 'float64']).columns) > 1:
+        fig = sns.pairplot(data, hue='Approved')
         st.pyplot(fig)
+    else:
+        st.write("Not enough numerical features for pairplot.")
 
-        # Pairplot for numerical features
-        st.subheader("Pairplot")
-        if len(data.select_dtypes(include=['int64', 'float64']).columns) > 1:
-            fig = sns.pairplot(data, hue='Approved')
-            st.pyplot(fig)
-        else:
-            st.write("Not enough numerical features for pairplot.")
+    # Correlation Matrix
+    st.subheader("Correlation Matrix")
+    corr = data.corr()
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
+    st.pyplot(fig)
 
-        # Correlation Matrix
-        st.subheader("Correlation Matrix")
-        corr = data.corr()
-        fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
-        st.pyplot(fig)
+with tab2:
+    st.header("Modeling")
 
-    with tab2:
-        st.header("Modeling")
+    # Separating features and target variable
+    X = data.drop(columns=['Approved'])
+    y = data['Approved']
 
-        # Separating features and target variable
-        X = data.drop(columns=['Approved'])
-        y = data['Approved']
+    # Identify categorical and numerical columns
+    numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
+    categorical_cols = X.select_dtypes(include=['object']).columns
 
-        # Identify categorical and numerical columns
-        numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
-        categorical_cols = X.select_dtypes(include=['object']).columns
+    # Preprocessing pipelines for numerical and categorical features
+    numerical_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())
+    ])
 
-        # Preprocessing pipelines for numerical and categorical features
-        numerical_pipeline = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='median')),
-            ('scaler', StandardScaler())
-        ])
+    categorical_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='most_frequent')),
+        ('onehot', OneHotEncoder(handle_unknown='ignore'))
+    ])
 
-        categorical_pipeline = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='most_frequent')),
-            ('onehot', OneHotEncoder(handle_unknown='ignore'))
-        ])
+    # Combine preprocessing pipelines
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numerical_pipeline, numerical_cols),
+            ('cat', categorical_pipeline, categorical_cols)
+        ]
+    )
 
-        # Combine preprocessing pipelines
-        preprocessor = ColumnTransformer(
-            transformers=[
-                ('num', numerical_pipeline, numerical_cols),
-                ('cat', categorical_pipeline, categorical_cols)
-            ]
-        )
+    # Define the models to evaluate
+    models = {
+        'Logistic Regression': LogisticRegression(max_iter=1000),
+        'Decision Tree': DecisionTreeClassifier(),
+        'Random Forest': RandomForestClassifier(),
+        'Gradient Boosting': GradientBoostingClassifier(),
+        'Support Vector Machine': SVC(),
+        'K-Nearest Neighbors': KNeighborsClassifier(),
+        'Naive Bayes': GaussianNB()
+    }
 
-        # Define the models to evaluate
-        models = {
-            'Logistic Regression': LogisticRegression(max_iter=1000),
-            'Decision Tree': DecisionTreeClassifier(),
-            'Random Forest': RandomForestClassifier(),
-            'Gradient Boosting': GradientBoostingClassifier(),
-            'Support Vector Machine': SVC(),
-            'K-Nearest Neighbors': KNeighborsClassifier(),
-            'Naive Bayes': GaussianNB()
-        }
+    st.write("Models are defined and ready for evaluation.")
 
-        st.write("Models are defined and ready for evaluation.")
+with tab3:
+    st.header("Scoring")
 
-    with tab3:
-        st.header("Scoring")
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        # Split the data into training and testing sets
-        X_train, X_test,
+    # Evaluate the models
+    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
+
+    # Display results
+    results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
+    st.write("Model Accuracies:")
+    st.write(results_df)
