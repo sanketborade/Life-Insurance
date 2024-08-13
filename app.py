@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
@@ -48,14 +50,18 @@ with tabs[0]:
     # Correlation matrix
     st.write("Correlation Matrix:")
     st.write(data.corr())
+    
+    # Correlation Heatmap using seaborn
     st.write("Correlation Heatmap:")
-    st.heatmap(data.corr(), annot=True, cmap='coolwarm')
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(data.corr(), annot=True, cmap='coolwarm', cbar=True)
+    st.pyplot(plt)  # Display the plot in Streamlit
 
 with tabs[1]:
     st.header("Modeling")
 
     # Separating features and target variable
-    X = data.drop(columns=['Approved'])  # Ensure Customer ID is not included
+    X = data.drop(columns=['Customer ID', 'Approved'])  # Ensure Customer ID is not included
     y = data['Approved']
 
     # Identify categorical and numerical columns
