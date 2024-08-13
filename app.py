@@ -57,6 +57,11 @@ with tab1:
 
     # Target distribution
     st.subheader("Target Distribution")
+    
+    # Calculate approval rate
+    approval_rate = data['Approved'].mean() * 100
+    st.write(f"Approval Rate: {approval_rate:.2f}%")
+    
     fig, ax = plt.subplots()
     sns.countplot(x='Approved', data=data, ax=ax)
     st.pyplot(fig)
