@@ -61,7 +61,7 @@ with tabs[1]:
     st.header("Modeling")
 
     # Separating features and target variable
-    X = data.drop(columns=['Customer ID', 'Approved'])  # Ensure Customer ID is not included
+    X = data.drop(columns=[ 'Approved'])  # Ensure Customer ID is not included
     y = data['Approved']
 
     # Identify categorical and numerical columns
