@@ -23,7 +23,9 @@ st.write("Dataset loaded successfully!")
 # Function to evaluate models
 def evaluate_models(models, X_train, y_train, X_test, y_test):
     results = {}
-    for name, model in models.items():
+    model_names = list(models.keys())  # Create a list of model names to iterate over
+    for name in model_names:
+        model = models[name]
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
                                    ('classifier', model)])
         pipeline.fit(X_train, y_train)
@@ -101,39 +103,3 @@ with tab2:
     categorical_pipeline = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='most_frequent')),
         ('onehot', OneHotEncoder(handle_unknown='ignore'))
-    ])
-
-    # Combine preprocessing pipelines
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', numerical_pipeline, numerical_cols),
-            ('cat', categorical_pipeline, categorical_cols)
-        ]
-    )
-
-    # Define the models to evaluate
-    models = {
-        'Logistic Regression': LogisticRegression(max_iter=1000),
-        'Decision Tree': DecisionTreeClassifier(),
-        'Random Forest': RandomForestClassifier(),
-        'Gradient Boosting': GradientBoostingClassifier(),
-        'Support Vector Machine': SVC(),
-        'K-Nearest Neighbors': KNeighborsClassifier(),
-        'Naive Bayes': GaussianNB()
-    }
-
-    st.write("Models are defined and ready for evaluation.")
-
-with tab3:
-    st.header("Scoring")
-
-    # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    # Evaluate the models
-    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
-
-    # Display results
-    results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
-    st.write("Model Accuracies:")
-    st.write(results_df)
