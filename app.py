@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -57,7 +56,7 @@ with tabs[1]:
     st.header("Modeling")
 
     # Separating features and target variable
-    X = data.drop(columns=['Customer ID', 'Approved'])
+    X = data.drop(columns=['Customer ID', 'Approved'])  # Ensure Customer ID is not included
     y = data['Approved']
 
     # Identify categorical and numerical columns
