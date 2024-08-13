@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -65,6 +66,17 @@ with tab1:
     fig, ax = plt.subplots()
     sns.countplot(x='Approved', data=data, ax=ax)
     st.pyplot(fig)
+
+    # Histograms for categorical features
+    st.subheader("Histograms for Smoking Status, Medical History, and Alcohol Consumption")
+
+    categorical_columns = ['Smoking Status', 'Medical History', 'Alcohol Consumption']
+
+    for column in categorical_columns:
+        fig, ax = plt.subplots()
+        sns.histplot(data[column], kde=False, bins=10, ax=ax)
+        ax.set_title(f'Distribution of {column}')
+        st.pyplot(fig)
 
     # Pairplot for numerical features
     st.subheader("Pairplot")
