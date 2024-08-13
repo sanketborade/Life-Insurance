@@ -18,7 +18,7 @@ from sklearn.preprocessing import OneHotEncoder
 data = pd.read_csv('approved_data.csv')
 
 # Separating features and target variable
-X = data.drop(columns=['Customer ID', 'Approved'])
+X = data.drop(columns=['Approved'])
 y = data['Approved']
 
 # Identify categorical and numerical columns
