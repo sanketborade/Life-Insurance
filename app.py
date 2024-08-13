@@ -1,12 +1,4 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "4de4aebe-e201-43dd-b0fa-87803ca0868d",
-   "metadata": {},
-   "outputs": [],
-   "source": [
+
     "import streamlit as st\n",
     "import pandas as pd\n",
     "import matplotlib.pyplot as plt\n",
