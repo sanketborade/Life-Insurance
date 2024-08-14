@@ -84,6 +84,11 @@ with tab1:
             ax.set_xticks([0, 1, 2, 3])
             ax.set_xticklabels(['No Disease (0)', 'Diabetes (1)', 'Hypertension (2)', 'Heart Disease (3)'])
 
+        # Set custom x-axis labels for Alcohol Consumption
+        if column == 'Alcohol Consumption':
+            ax.set_xticks([0, 1, 2, 3])
+            ax.set_xticklabels(['Never (0)', 'Low (1)', 'Moderate (2)', 'High (3)'])
+
         st.pyplot(fig)
 
     # Target distribution
