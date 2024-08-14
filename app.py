@@ -66,6 +66,12 @@ with tab1:
         ax.set_title(f'Distribution of {column}')
         ax.set_xlabel(column)
         ax.set_ylabel("Count")
+        
+        # Set custom labels for Smoking Status
+        if column == 'Smoking Status':
+            ax.set_xticks([0.0, 1.0])
+            ax.set_xticklabels(['Non-Smoker (0.0)', 'Smoker (1.0)'])
+        
         st.pyplot(fig)
 
     # Target distribution
