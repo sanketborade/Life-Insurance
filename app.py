@@ -28,7 +28,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
                                    ('classifier', model)])
         pipeline.fit(X_train, y_train)
-        y_pred = pipeline.predict(XTest)
+        y_pred = pipeline.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
         results[name] = accuracy
     return results
@@ -78,6 +78,11 @@ with tab1:
         if column == 'Smoking Status':
             ax.set_xticks([0, 1])
             ax.set_xticklabels(['Non-Smoker (0)', 'Smoker (1)'])
+
+        # Set custom x-axis labels for Medical History
+        if column == 'Medical History':
+            ax.set_xticks([0, 1, 2, 3])
+            ax.set_xticklabels(['No Disease (0)', 'Diabetes (1)', 'Hypertension (2)', 'Heart Disease (3)'])
 
         st.pyplot(fig)
 
