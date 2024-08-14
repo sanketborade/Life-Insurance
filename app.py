@@ -28,7 +28,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
                                    ('classifier', model)])
         pipeline.fit(X_train, y_train)
-        y_pred = pipeline.predict(X_test)
+        y_pred = pipeline.predict(XTest)
         accuracy = accuracy_score(y_test, y_pred)
         results[name] = accuracy
     return results
@@ -73,6 +73,11 @@ with tab1:
             ax.annotate(f'{p.get_height():.2f}%', (p.get_x() + p.get_width() / 2., p.get_height()), 
                         ha='center', va='center', fontsize=11, color='black', xytext=(0, 10),
                         textcoords='offset points')
+
+        # Set custom x-axis labels for Smoking Status
+        if column == 'Smoking Status':
+            ax.set_xticks([0, 1])
+            ax.set_xticklabels(['Non-Smoker (0)', 'Smoker (1)'])
 
         st.pyplot(fig)
 
