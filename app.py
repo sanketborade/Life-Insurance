@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -56,17 +55,6 @@ with tab1:
     st.subheader("Missing Values")
     st.write(data.isnull().sum())
 
-    # Target distribution
-    st.subheader("Target Distribution")
-    
-    # Calculate approval rate
-    approval_rate = data['Approved'].mean() * 100
-    st.write(f"Approval Rate: {approval_rate:.2f}%")
-    
-    fig, ax = plt.subplots()
-    sns.countplot(x='Approved', data=data, ax=ax)
-    st.pyplot(fig)
-
     # Histograms for categorical features
     st.subheader("Histograms for Smoking Status, Medical History, and Alcohol Consumption")
 
@@ -76,7 +64,22 @@ with tab1:
         fig, ax = plt.subplots()
         sns.histplot(data[column], kde=False, bins=10, ax=ax)
         ax.set_title(f'Distribution of {column}')
+        ax.set_xlabel(column)
+        ax.set_ylabel("Count")
         st.pyplot(fig)
+
+    # Target distribution
+    st.subheader("Target Distribution")
+    
+    # Calculate approval rate
+    approval_rate = data['Approved'].mean() * 100
+    st.write(f"Approval Rate: {approval_rate:.2f}%")
+    
+    fig, ax = plt.subplots()
+    sns.countplot(x='Approved', data=data, ax=ax)
+    ax.set_xlabel("Approved")
+    ax.set_ylabel("Count")
+    st.pyplot(fig)
 
     # Pairplot for numerical features
     st.subheader("Pairplot")
