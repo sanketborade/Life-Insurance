@@ -37,7 +37,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
 st.title('Life Insurance Underwriting')
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["EDA", "Modelling", "Scoring"])
+tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
 
 with tab1:
     st.header("Exploratory Data Analysis (EDA)")
@@ -55,17 +55,25 @@ with tab1:
     st.subheader("Missing Values")
     st.write(data.isnull().sum())
 
-    # Histograms for categorical features
+    # Histograms for categorical features with percentages
     st.subheader("Histograms for Smoking Status, Medical History, and Alcohol Consumption")
 
     categorical_columns = ['Smoking Status', 'Medical History', 'Alcohol Consumption']
 
     for column in categorical_columns:
         fig, ax = plt.subplots()
-        sns.histplot(data[column], kde=False, bins=10, ax=ax)
+        counts = data[column].value_counts(normalize=True) * 100  # Calculate percentage
+        sns.barplot(x=counts.index, y=counts.values, ax=ax)
         ax.set_title(f'Distribution of {column}')
         ax.set_xlabel(column)
-        ax.set_ylabel("Count")
+        ax.set_ylabel("Percentage")
+
+        # Annotate bars with percentages
+        for p in ax.patches:
+            ax.annotate(f'{p.get_height():.2f}%', (p.get_x() + p.get_width() / 2., p.get_height()), 
+                        ha='center', va='center', fontsize=11, color='black', xytext=(0, 10),
+                        textcoords='offset points')
+
         st.pyplot(fig)
 
     # Target distribution
