@@ -37,7 +37,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
 st.title('Life Insurance Underwriting')
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
+tab1, tab2, tab3 = st.tabs(["EDA", "Modelling", "Scoring"])
 
 with tab1:
     st.header("Exploratory Data Analysis (EDA)")
