@@ -23,7 +23,6 @@ st.write("Dataset loaded successfully!")
 # Function to evaluate models
 def evaluate_models(models, X_train, y_train, X_test, y_test):
     results = {}
-    probabilities = {}
     for name in models.keys():  # Create a list of model names to iterate over
         model = models[name]
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
@@ -32,12 +31,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
         y_pred = pipeline.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
         results[name] = accuracy
-
-        # Calculate probabilities of rejection and acceptance
-        y_proba = pipeline.predict_proba(X_test)
-        probabilities[name] = {'Acceptance': y_proba[:, 1].mean(), 'Rejection': y_proba[:, 0].mean()}
-
-    return results, probabilities
+    return results
 
 # Streamlit interface
 st.title('Life Insurance Underwriting')
@@ -139,4 +133,51 @@ with tab2:
     y = data['Approved']
 
     # Identify categorical and numerical columns
-    numerical_cols = X.select_dtypes(include=['int64', 'float64
+    numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
+    categorical_cols = X.select_dtypes(include=['object']).columns
+
+    # Preprocessing pipelines for numerical and categorical features
+    numerical_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())
+    ])
+
+    categorical_pipeline = Pipeline(steps=[
+        ('imputer', SimpleImputer(strategy='most_frequent')),
+        ('onehot', OneHotEncoder(handle_unknown='ignore'))
+    ])
+
+    # Combine preprocessing pipelines
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('num', numerical_pipeline, numerical_cols),
+            ('cat', categorical_pipeline, categorical_cols)
+        ]
+    )
+
+    # Define the models to evaluate
+    models = {
+        'Logistic Regression': LogisticRegression(max_iter=1000),
+        'Decision Tree': DecisionTreeClassifier(),
+        'Random Forest': RandomForestClassifier(),
+        'Gradient Boosting': GradientBoostingClassifier(),
+        'Support Vector Machine': SVC(),
+        'K-Nearest Neighbors': KNeighborsClassifier(),
+        'Naive Bayes': GaussianNB()
+    }
+
+    # Split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Evaluate the models
+    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
+
+    # Display results
+    st.subheader("Model Accuracies")
+    results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
+    st.write(results_df)
+
+with tab3:
+    st.header("Scoring")
+
+    st.write("This tab could be used for additional scoring metrics or detailed analysis.")
