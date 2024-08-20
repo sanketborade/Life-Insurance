@@ -177,7 +177,4 @@ with tab2:
     results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
     st.write(results_df)
 
-with tab3:
-    st.header("Scoring")
 
-    st.write("This tab could be used for additional scoring metrics or detailed analysis.")
