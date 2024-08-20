@@ -37,10 +37,15 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
 st.title('Life Insurance Underwriting')
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["EDA", "Modeling"])
+tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
 
 with tab1:
     st.header("Exploratory Data Analysis (EDA)")
+
+    # Display basic dataset information
+    st.subheader("Basic Information")
+    st.write("Dataset shape:", data.shape)
+    st.write("Dataset columns:", data.columns.tolist())
 
     # Summary statistics
     st.subheader("Summary Statistics")
@@ -172,4 +177,7 @@ with tab2:
     results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
     st.write(results_df)
 
+with tab3:
+    st.header("Scoring")
 
+    st.write("This tab could be used for additional scoring metrics or detailed analysis.")
