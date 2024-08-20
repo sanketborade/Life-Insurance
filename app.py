@@ -129,7 +129,7 @@ with tab2:
 
     # Identify categorical and numerical columns
     numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
-    categorical_cols = X.select_dtypes(include=['object']).columns
+    categorical_cols = X.select_dtypes(include(['object']).columns
 
     # Preprocessing pipelines for numerical and categorical features
     numerical_pipeline = Pipeline(steps=[
@@ -208,3 +208,18 @@ with tab3:
         # Calculate the approval rate
         approval_rate_calculated = custom_data['Approved'].mean() * 100
         st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
+
+        # Count of approved and rejected forms
+        approved_count = custom_data['Approved'].sum()
+        rejected_count = len(custom_data) - approved_count
+        st.write(f"Number of Approved Forms: {approved_count}")
+        st.write(f"Number of Rejected Forms: {rejected_count}")
+
+        # Download the scored data
+        csv = custom_data.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Scored Data",
+            data=csv,
+            file_name='scored_data.csv',
+            mime='text/csv',
+        )
