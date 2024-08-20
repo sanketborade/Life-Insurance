@@ -42,11 +42,6 @@ tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
 with tab1:
     st.header("Exploratory Data Analysis (EDA)")
 
-    # Display basic dataset information
-    st.subheader("Basic Information")
-    st.write("Dataset shape:", data.shape)
-    st.write("Dataset columns:", data.columns.tolist())
-
     # Summary statistics
     st.subheader("Summary Statistics")
     st.write(data.describe())
