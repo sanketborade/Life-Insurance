@@ -178,4 +178,33 @@ with tab3:
     # File uploader for custom data
     uploaded_file = st.file_uploader("Upload your dataset for scoring", type="csv")
     
-   
+    if uploaded_file is not None:
+        # Load the uploaded data
+        custom_data = pd.read_csv(uploaded_file)
+        st.write("Uploaded data:")
+        st.write(custom_data.head())
+
+        # Define approval criteria
+        def approve_application(row):
+            # Example criteria (adjust based on actual underwriting policies)
+            if (18 <= row['Age'] <= 65 and
+                row['Smoking Status'] == 0 and  # Assuming 0 is Non-Smoker
+                18.5 <= row['BMI'] <= 24.9 and  # Healthy BMI range
+                row['Medical History'] == 0 and  # Assuming 0 is No significant medical history
+                row['Alcohol Consumption'] <= 2 and  # Assuming 2 or less is moderate/no consumption
+                row['Family History of Disease'] == 0 and  # Assuming 0 is No significant family history
+                row['Occupation'] != 'High Risk'):  # Assuming 'High Risk' occupation is identified
+                return 1
+            else:
+                return 0
+
+        # Apply criteria to create 'Approved' column
+        custom_data['Approved'] = custom_data.apply(approve_application, axis=1)
+
+        # Display the updated data with the 'Approved' column
+        st.write("Scored data with 'Approved' column:")
+        st.write(custom_data.head())
+
+        # Calculate the approval rate
+        approval_rate_calculated = custom_data['Approved'].mean() * 100
+        st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
