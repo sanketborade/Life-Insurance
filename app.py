@@ -129,7 +129,7 @@ with tab2:
 
     # Identify categorical and numerical columns
     numerical_cols = X.select_dtypes(include=['int64', 'float64']).columns
-    categorical_cols = X.select_dtypes(include(['object']).columns
+    categorical_cols = X.select_dtypes(include=['object']).columns
 
     # Preprocessing pipelines for numerical and categorical features
     numerical_pipeline = Pipeline(steps=[
