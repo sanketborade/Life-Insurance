@@ -178,18 +178,4 @@ with tab3:
     # File uploader for custom data
     uploaded_file = st.file_uploader("Upload your dataset for scoring", type="csv")
     
-    if uploaded_file is not None:
-        user_data = pd.read_csv(uploaded_file)
-        st.write("User dataset loaded successfully!")
-        
-        # Preprocess user data
-        X_user = user_data.drop(columns=['Approved'])  # Assuming 'Approved' is the target column in the user data
-        X_user_processed = preprocessor.transform(X_user)
-        
-        # Predict using one of the models, e.g., RandomForest
-        model = models['Random Forest']
-        predictions = model.predict(X_user_processed)
-        
-        # Show predictions
-        user_data['Predicted Approved'] = predictions
-        st.write(user_data)
+   
