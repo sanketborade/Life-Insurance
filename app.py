@@ -187,10 +187,15 @@ with tab2:
 
     # Highlight the best model
     best_model_name = results_df.index[0]
+    best_model = models[best_model_name]
     best_model_accuracy = results_df.iloc[0, 0]
 
     st.subheader(f"Best Model: {best_model_name}")
     st.write(f"Accuracy: {best_model_accuracy:.2f}%")
+
+    # Store the best model pipeline
+    best_pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('classifier', best_model)])
+
 
 with tab3:
     st.header("Scoring")
@@ -204,39 +209,26 @@ with tab3:
         st.write("Uploaded data:")
         st.write(custom_data.head())
 
-        # Define approval criteria
-        def approve_application(row):
-            # Example criteria (adjust based on actual underwriting policies)
-            if (18 <= row['Age'] <= 65 and
-                row['Smoking Status'] == 0 and  # Assuming 0 is Non-Smoker
-                18.5 <= row['BMI'] <= 24.9 and  # Healthy BMI range
-                row['Medical History'] == 0 and  # Assuming 0 is No significant medical history
-                row['Alcohol Consumption'] <= 2 and  # Assuming 2 or less is moderate/no consumption
-                row['Family History of Disease'] == 0 and  # Assuming 0 is No significant family history
-                row['Occupation'] != 'High Risk'):  # Assuming 'High Risk' occupation is identified
-                return 1
-            else:
-                return 0
-
-        # Apply criteria to create 'Approved' column
-        custom_data['Approved'] = custom_data.apply(approve_application, axis=1)
+        # Preprocess and score the data using the best model pipeline
+        scored_data = custom_data.copy()
+        scored_data['Approved'] = best_pipeline.predict(custom_data)
 
         # Display the updated data with the 'Approved' column
         st.write("Scored data with 'Approved' column:")
-        st.write(custom_data.head())
+        st.write(scored_data.head())
 
         # Calculate the approval rate
-        approval_rate_calculated = custom_data['Approved'].mean() * 100
+        approval_rate_calculated = scored_data['Approved'].mean() * 100
         st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
 
         # Count of approved and rejected forms
-        approved_count = custom_data['Approved'].sum()
-        rejected_count = len(custom_data) - approved_count
+        approved_count = scored_data['Approved'].sum()
+        rejected_count = len(scored_data) - approved_count
         st.write(f"Number of Approved Forms: {approved_count}")
         st.write(f"Number of Rejected Forms: {rejected_count}")
 
         # Download the scored data
-        csv = custom_data.to_csv(index=False).encode('utf-8')
+        csv = scored_data.to_csv(index=False).encode('utf-8')
         st.download_button(
             label="Download Scored Data",
             data=csv,
