@@ -104,10 +104,7 @@ with tab1:
 
         # Perform Correspondence Analysis
         ca = prince.CA(n_components=2)
-        ca = ca.fit(ca_data)
-
-        # Transform the data
-        ca_result = ca.transform(ca_data)
+        ca_result = ca.fit_transform(ca_data)
 
         # Plot the results
         fig, ax = plt.subplots(figsize=(10, 8))
