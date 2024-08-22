@@ -99,27 +99,6 @@ with tab1:
     ax.set_ylabel("Count")
     st.pyplot(fig)
 
-    # Pairplot for numerical features
-    st.subheader("Pairplot")
-    if len(data.select_dtypes(include=['int64', 'float64']).columns) > 1:
-        fig = sns.pairplot(data, hue='Approved')
-        st.pyplot(fig)
-    else:
-        st.write("Not enough numerical features for pairplot.")
-
-    # Correlation Matrix
-    st.subheader("Correlation Matrix")
-    corr = data.corr()
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
-    st.pyplot(fig)
-
-    # Heatmap of correlations
-    st.subheader("Heatmap of Correlations")
-    fig, ax = plt.subplots(figsize=(12, 8))
-    sns.heatmap(corr, annot=True, fmt=".2f", cmap="YlGnBu", ax=ax)
-    st.pyplot(fig)
-
 with tab2:
     st.header("Modeling")
 
