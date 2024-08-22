@@ -119,12 +119,6 @@ with tab1:
     else:
         st.write("Not enough variables available for Correspondence Analysis.")
 
-    # Correlation Matrix
-    st.subheader("Correlation Matrix")
-    corr = data.corr()
-    fig, ax = plt.subplots(figsize=(10, 8))
-    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
-    st.pyplot(fig)
 
 with tab2:
     st.header("Modeling")
