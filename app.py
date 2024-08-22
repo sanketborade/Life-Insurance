@@ -192,14 +192,6 @@ with tab2:
     st.subheader(f"Best Model: {best_model_name}")
     st.write(f"Accuracy: {best_model_accuracy:.2f}%")
 
-    # Optional: Add a button to retrain the best model on the entire dataset and save it
-    if st.button(f"Retrain {best_model_name} on Full Data"):
-        best_model = models[best_model_name]
-        full_pipeline = Pipeline(steps=[('preprocessor', preprocessor),
-                                        ('classifier', best_model)])
-        full_pipeline.fit(X, y)
-        st.write(f"{best_model_name} retrained on the full dataset.")
-
 with tab3:
     st.header("Scoring")
 
