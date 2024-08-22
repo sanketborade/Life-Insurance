@@ -1,4 +1,4 @@
-Customer ID,Age,Gender,Smoking Status,Medical History,Occupation,Annual Income,Coverage Amount,Term Length,BMI,Family History of Disease,Physical Activity Level,Alcohol Consumption,Premium Payment Frequency,Approved
+CustomerID,Age,Gender,Smoking Status,Medical History,Occupation,Annual Income,Coverage Amount,Term Length,BMI,Family History of Disease,Physical Activity Level,Alcohol Consumption,Premium Payment Frequency,Approved
 1,41,1,1,1,4,24885959,6176796,10,17.2,2,1,1,2,0
 2,26,1,1,3,2,40055997,31143795,10,23.5,3,1,2,0,0
 3,47,1,1,1,6,32393028,13653530,25,23.3,0,3,2,0,0
