@@ -206,8 +206,16 @@ with tab3:
         st.write("Uploaded data:")
         st.write(custom_data.head())
 
+        # Display column names for debugging
+        st.write("Columns in uploaded data:")
+        st.write(custom_data.columns.tolist())
+
+        # Drop irrelevant columns if any, adjust based on your dataset
+        if 'Customer ID' in custom_data.columns:
+            custom_data = custom_data.drop(columns=['Customer ID'])
+
         # Align custom data with the model's expected features
-        X_custom = custom_data[X.columns]  # Ensure the uploaded data has the same features
+        X_custom = custom_data[X.columns.intersection(custom_data.columns)]  # Ensure the uploaded data has the same features
 
         # Apply preprocessing
         X_custom_preprocessed = preprocessor.transform(X_custom)
@@ -222,21 +230,4 @@ with tab3:
         st.write("Scored data with 'Approved' column:")
         st.write(custom_data.head())
 
-        # Calculate the approval rate
-        approval_rate_calculated = custom_data['Approved'].mean() * 100
-        st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
-
-        # Count of approved and rejected forms
-        approved_count = custom_data['Approved'].sum()
-        rejected_count = len(custom_data) - approved_count
-        st.write(f"Number of Approved Forms: {approved_count}")
-        st.write(f"Number of Rejected Forms: {rejected_count}")
-
-        # Download the scored data
-        csv = custom_data.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="Download Scored Data",
-            data=csv,
-            file_name='scored_data.csv',
-            mime='text/csv',
-        )
+       
