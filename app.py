@@ -24,8 +24,7 @@ st.write("Dataset loaded successfully!")
 # Function to evaluate models
 def evaluate_models(models, X_train, y_train, X_test, y_test):
     results = {}
-    pipelines = {}
-    for name in models.keys():  # Create a list of model names to iterate over
+    for name in models.keys():
         model = models[name]
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
                                    ('classifier', model)])
@@ -33,8 +32,7 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
         y_pred = pipeline.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
         results[name] = accuracy
-        pipelines[name] = pipeline
-    return results, pipelines
+    return results
 
 # Streamlit interface
 st.title('Life Insurance Underwriting')
@@ -177,7 +175,7 @@ with tab2:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Evaluate the models
-    model_accuracies, pipelines = evaluate_models(models, X_train, y_train, X_test, y_test)
+    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
 
     # Convert results to DataFrame
     results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
@@ -188,9 +186,10 @@ with tab2:
     st.write(results_df)
 
     # Highlight the best model
-    best_model_name = results_df.index[0]
-    best_model_accuracy = results_df.iloc[0, 0]
-    best_pipeline = pipelines[best_model_name]
+    best_model_name = 'Decision Tree'
+    best_model = DecisionTreeClassifier()
+    best_model.fit(X_train, y_train)
+    best_model_accuracy = model_accuracies[best_model_name]
 
     st.subheader(f"Best Model: {best_model_name}")
     st.write(f"Accuracy: {best_model_accuracy:.2f}%")
@@ -207,31 +206,34 @@ with tab3:
         st.write("Uploaded data:")
         st.write(custom_data.head())
 
-        # Ensure that the columns in `custom_data` match those used in the model
-        # Drop any columns not used by the model
-        model_features = [col for col in custom_data.columns if col in X.columns]
-        custom_data = custom_data[model_features]
+        # Align custom data with the model's expected features
+        X_custom = custom_data[X.columns]  # Ensure the uploaded data has the same features
 
-        # Predict using the best model pipeline
-        scored_data = custom_data.copy()
-        scored_data['Approved'] = best_pipeline.predict(custom_data)
+        # Apply preprocessing
+        X_custom_preprocessed = preprocessor.transform(X_custom)
+
+        # Predict using the best model
+        predictions = best_model.predict(X_custom_preprocessed)
+
+        # Add the predictions to the custom data
+        custom_data['Approved'] = predictions
 
         # Display the updated data with the 'Approved' column
         st.write("Scored data with 'Approved' column:")
-        st.write(scored_data.head())
+        st.write(custom_data.head())
 
         # Calculate the approval rate
-        approval_rate_calculated = scored_data['Approved'].mean() * 100
+        approval_rate_calculated = custom_data['Approved'].mean() * 100
         st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
 
         # Count of approved and rejected forms
-        approved_count = scored_data['Approved'].sum()
-        rejected_count = len(scored_data) - approved_count
+        approved_count = custom_data['Approved'].sum()
+        rejected_count = len(custom_data) - approved_count
         st.write(f"Number of Approved Forms: {approved_count}")
         st.write(f"Number of Rejected Forms: {rejected_count}")
 
         # Download the scored data
-        csv = scored_data.to_csv(index=False).encode('utf-8')
+        csv = custom_data.to_csv(index=False).encode('utf-8')
         st.download_button(
             label="Download Scored Data",
             data=csv,
