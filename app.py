@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import prince  # For Correspondence Analysis
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
@@ -86,17 +87,43 @@ with tab1:
 
         st.pyplot(fig)
 
-    # Target distribution
-    st.subheader("Target Distribution")
-    
-    # Calculate approval rate
-    approval_rate = data['Approved'].mean() * 100
-    st.write(f"Approval Rate: {approval_rate:.2f}%")
-    
-    fig, ax = plt.subplots()
-    sns.countplot(x='Approved', data=data, ax=ax)
-    ax.set_xlabel("Approved")
-    ax.set_ylabel("Count")
+    # Correspondence Analysis
+    st.subheader("Correspondence Analysis")
+
+    ca_columns = [
+        'Gender', 'Smoking Status', 'Medical History', 'Occupation',
+        'Term Length', 'Family History', 'Physical Activity Level',
+        'Alcohol Consumption', 'Premium Payment Frequency'
+    ]
+
+    # Filter out missing columns
+    ca_columns = [col for col in ca_columns if col in data.columns]
+
+    if len(ca_columns) > 1:
+        ca_data = data[ca_columns]
+
+        # Perform Correspondence Analysis
+        ca = prince.CA(n_components=2)
+        ca = ca.fit(ca_data)
+
+        # Transform the data
+        ca_result = ca.transform(ca_data)
+
+        # Plot the results
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.scatterplot(x=ca_result[0], y=ca_result[1], hue=data['Approved'], ax=ax)
+        ax.set_title('Correspondence Analysis')
+        ax.set_xlabel('Component 1')
+        ax.set_ylabel('Component 2')
+        st.pyplot(fig)
+    else:
+        st.write("Not enough variables available for Correspondence Analysis.")
+
+    # Correlation Matrix
+    st.subheader("Correlation Matrix")
+    corr = data.corr()
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
     st.pyplot(fig)
 
 with tab2:
