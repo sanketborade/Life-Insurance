@@ -185,14 +185,15 @@ with tab2:
     st.subheader("Model Accuracies")
     st.write(results_df)
 
-    # Highlight the best model
-    best_model_name = 'Decision Tree'
-    best_model = DecisionTreeClassifier()
-    best_model.fit(X_train, y_train)
-    best_model_accuracy = model_accuracies[best_model_name]
-
+    # Highlight the best model dynamically
+    best_model_name = results_df.index[0]
+    best_model_accuracy = results_df.iloc[0, 0]
     st.subheader(f"Best Model: {best_model_name}")
     st.write(f"Accuracy: {best_model_accuracy:.2f}%")
+
+    # Select and train the best model
+    best_model = models[best_model_name]
+    best_model.fit(X_train, y_train)
 
 with tab3:
     st.header("Scoring")
@@ -234,4 +235,7 @@ with tab3:
         approval_rate_calculated = custom_data['Approved'].mean() * 100
         st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
 
-        
+        # Count of approved and rejected forms
+        approved_count = custom_data['Approved'].sum()
+        rejected_count = len(custom_data) - approved_count
+        st.write(f"Number of Approved Forms: {approved_count}")
