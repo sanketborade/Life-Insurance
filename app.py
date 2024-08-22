@@ -210,7 +210,7 @@ with tab3:
         st.write("Columns in uploaded data:")
         st.write(custom_data.columns.tolist())
 
-        # Drop irrelevant columns if any, adjust based on your dataset
+        # Check for the presence of 'Customer ID' and remove it if present
         if 'Customer ID' in custom_data.columns:
             custom_data = custom_data.drop(columns=['Customer ID'])
 
@@ -230,4 +230,8 @@ with tab3:
         st.write("Scored data with 'Approved' column:")
         st.write(custom_data.head())
 
-       
+        # Calculate the approval rate
+        approval_rate_calculated = custom_data['Approved'].mean() * 100
+        st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
+
+        
