@@ -136,7 +136,7 @@ with tab2:
     st.header("Modeling")
 
     # Separating features and target variable
-    X = data.drop(columns=['Approved'])
+    X = data.drop(columns=['Approved','Customer ID'])
     y = data['Approved']
 
     # Identify categorical and numerical columns
