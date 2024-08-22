@@ -106,13 +106,23 @@ with tab1:
         ca = prince.CA(n_components=2)
         ca = ca.fit(ca_data)
 
-        # Transform the data to row coordinates
-        ca_result = ca.row_coordinates(ca_data)
+        # Get row and column coordinates
+        row_coords = ca.row_coordinates(ca_data)
+        col_coords = ca.column_coordinates(ca_data)
 
-        # Plot the results
+        # Plot the biplot
         fig, ax = plt.subplots(figsize=(10, 8))
-        sns.scatterplot(x=ca_result[0], y=ca_result[1], hue=data['Approved'], ax=ax)
-        ax.set_title('Correspondence Analysis')
+
+        # Plot the row coordinates
+        sns.scatterplot(x=row_coords[0], y=row_coords[1], hue=data['Approved'], ax=ax, marker='o', label='Rows')
+
+        # Plot the column coordinates
+        sns.scatterplot(x=col_coords[0], y=col_coords[1], ax=ax, marker='x', label='Columns', color='red')
+
+        for i, col in enumerate(ca_columns):
+            ax.text(col_coords[0][i], col_coords[1][i], col, color='red', fontsize=12)
+
+        ax.set_title('Correspondence Analysis Biplot')
         ax.set_xlabel('Component 1')
         ax.set_ylabel('Component 2')
         st.pyplot(fig)
