@@ -177,10 +177,28 @@ with tab2:
     # Evaluate the models
     model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
 
-    # Display results
-    st.subheader("Model Accuracies")
+    # Convert results to DataFrame
     results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
+    results_df = results_df.sort_values(by='Accuracy', ascending=False)
+
+    # Display the accuracies
+    st.subheader("Model Accuracies")
     st.write(results_df)
+
+    # Highlight the best model
+    best_model_name = results_df.index[0]
+    best_model_accuracy = results_df.iloc[0, 0]
+
+    st.subheader(f"Best Model: {best_model_name}")
+    st.write(f"Accuracy: {best_model_accuracy:.2f}%")
+
+    # Optional: Add a button to retrain the best model on the entire dataset and save it
+    if st.button(f"Retrain {best_model_name} on Full Data"):
+        best_model = models[best_model_name]
+        full_pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                                        ('classifier', best_model)])
+        full_pipeline.fit(X, y)
+        st.write(f"{best_model_name} retrained on the full dataset.")
 
 with tab3:
     st.header("Scoring")
