@@ -24,6 +24,7 @@ st.write("Dataset loaded successfully!")
 # Function to evaluate models
 def evaluate_models(models, X_train, y_train, X_test, y_test):
     results = {}
+    pipelines = {}
     for name in models.keys():  # Create a list of model names to iterate over
         model = models[name]
         pipeline = Pipeline(steps=[('preprocessor', preprocessor),
@@ -32,7 +33,8 @@ def evaluate_models(models, X_train, y_train, X_test, y_test):
         y_pred = pipeline.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
         results[name] = accuracy
-    return results
+        pipelines[name] = pipeline
+    return results, pipelines
 
 # Streamlit interface
 st.title('Life Insurance Underwriting')
@@ -175,7 +177,7 @@ with tab2:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Evaluate the models
-    model_accuracies = evaluate_models(models, X_train, y_train, X_test, y_test)
+    model_accuracies, pipelines = evaluate_models(models, X_train, y_train, X_test, y_test)
 
     # Convert results to DataFrame
     results_df = pd.DataFrame.from_dict(model_accuracies, orient='index', columns=['Accuracy'])
@@ -187,15 +189,11 @@ with tab2:
 
     # Highlight the best model
     best_model_name = results_df.index[0]
-    best_model = models[best_model_name]
     best_model_accuracy = results_df.iloc[0, 0]
+    best_pipeline = pipelines[best_model_name]
 
     st.subheader(f"Best Model: {best_model_name}")
     st.write(f"Accuracy: {best_model_accuracy:.2f}%")
-
-    # Store the best model pipeline
-    best_pipeline = Pipeline(steps=[('preprocessor', preprocessor), ('classifier', best_model)])
-
 
 with tab3:
     st.header("Scoring")
@@ -209,7 +207,12 @@ with tab3:
         st.write("Uploaded data:")
         st.write(custom_data.head())
 
-        # Preprocess and score the data using the best model pipeline
+        # Ensure that the columns in `custom_data` match those used in the model
+        # Drop any columns not used by the model
+        model_features = [col for col in custom_data.columns if col in X.columns]
+        custom_data = custom_data[model_features]
+
+        # Predict using the best model pipeline
         scored_data = custom_data.copy()
         scored_data['Approved'] = best_pipeline.predict(custom_data)
 
