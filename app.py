@@ -207,25 +207,22 @@ with tab3:
         st.write("Uploaded data:")
         st.write(custom_data.head())
 
-        # Display column names for debugging
-        st.write("Columns in uploaded data:")
-        st.write(custom_data.columns.tolist())
+        # Define approval criteria
+        def approve_application(row):
+            # Example criteria (adjust based on actual underwriting policies)
+            if (18 <= row['Age'] <= 65 and
+                row['Smoking Status'] == 0 and  # Assuming 0 is Non-Smoker
+                18.5 <= row['BMI'] <= 24.9 and  # Healthy BMI range
+                row['Medical History'] == 0 and  # Assuming 0 is No significant medical history
+                row['Alcohol Consumption'] <= 2 and  # Assuming 2 or less is moderate/no consumption
+                row['Family History of Disease'] == 0 and  # Assuming 0 is No significant family history
+                row['Occupation'] != 'High Risk'):  # Assuming 'High Risk' occupation is identified
+                return 1
+            else:
+                return 0
 
-        # Check for the presence of 'Customer ID' and remove it if present
-        if 'Customer ID' in custom_data.columns:
-            custom_data = custom_data.drop(columns=['Customer ID'])
-
-        # Align custom data with the model's expected features
-        X_custom = custom_data[X.columns.intersection(custom_data.columns)]  # Ensure the uploaded data has the same features
-
-        # Apply preprocessing
-        X_custom_preprocessed = preprocessor.transform(X_custom)
-
-        # Predict using the best model
-        predictions = best_model.predict(X_custom_preprocessed)
-
-        # Add the predictions to the custom data
-        custom_data['Approved'] = predictions
+        # Apply criteria to create 'Approved' column
+        custom_data['Approved'] = custom_data.apply(approve_application, axis=1)
 
         # Display the updated data with the 'Approved' column
         st.write("Scored data with 'Approved' column:")
@@ -239,3 +236,13 @@ with tab3:
         approved_count = custom_data['Approved'].sum()
         rejected_count = len(custom_data) - approved_count
         st.write(f"Number of Approved Forms: {approved_count}")
+        st.write(f"Number of Rejected Forms: {rejected_count}")
+
+        # Download the scored data
+        csv = custom_data.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Scored Data",
+            data=csv,
+            file_name='scored_data.csv',
+            mime='text/csv',
+        )
