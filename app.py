@@ -1,4 +1,3 @@
-import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -87,33 +86,6 @@ with tab1:
 
         st.pyplot(fig)
 
-    # Approval/Rejection Histogram
-    st.subheader("Approval vs Rejection Histogram")
-
-    # Calculate approval and rejection percentages
-    approval_rate = data['Approved'].mean() * 100
-    rejection_rate = 100 - approval_rate
-
-    # Plot the histogram
-    fig, ax = plt.subplots()
-    sns.countplot(x='Approved', data=data, ax=ax)
-
-    # Annotate bars with percentages
-    for p in ax.patches:
-        percentage = f'{100 * p.get_height() / len(data):.2f}%'
-        ax.annotate(percentage, (p.get_x() + p.get_width() / 2., p.get_height()), 
-                    ha='center', va='center', fontsize=12, color='black', xytext=(0, 10),
-                    textcoords='offset points')
-
-    ax.set_title("Approval vs Rejection")
-    ax.set_xlabel("Approved (1) / Rejected (0)")
-    ax.set_ylabel("Count")
-    st.pyplot(fig)
-
-    # Display approval and rejection percentages
-    st.write(f"Approval Rate: {approval_rate:.2f}%")
-    st.write(f"Rejection Rate: {rejection_rate:.2f}%")
-
     # Correspondence Analysis
     st.subheader("Correspondence Analysis")
 
@@ -155,6 +127,19 @@ with tab1:
         st.pyplot(fig)
     else:
         st.write("Not enough variables available for Correspondence Analysis.")
+        
+  # Target distribution
+    st.subheader("Target Distribution")
+    
+    # Calculate approval rate
+    approval_rate = data['Approved'].mean() * 100
+    st.write(f"Approval Rate: {approval_rate:.2f}%")
+    
+    fig, ax = plt.subplots()
+    sns.countplot(x='Approved', data=data, ax=ax)
+    ax.set_xlabel("Approved")
+    ax.set_ylabel("Count")
+    st.pyplot(fig)    
 
 with tab2:
     st.header("Modeling")
@@ -238,3 +223,37 @@ with tab3:
             # Example criteria (adjust based on actual underwriting policies)
             if (18 <= row['Age'] <= 65 and
                 row['Smoking Status'] == 0 and  # Assuming 0 is Non-Smoker
+                18.5 <= row['BMI'] <= 24.9 and  # Healthy BMI range
+                row['Medical History'] == 0 and  # Assuming 0 is No significant medical history
+                row['Alcohol Consumption'] <= 2 and  # Assuming 2 or less is moderate/no consumption
+                row['Family History of Disease'] == 0 and  # Assuming 0 is No significant family history
+                row['Occupation'] != 'High Risk'):  # Assuming 'High Risk' occupation is identified
+                return 1
+            else:
+                return 0
+
+        # Apply criteria to create 'Approved' column
+        custom_data['Approved'] = custom_data.apply(approve_application, axis=1)
+
+        # Display the updated data with the 'Approved' column
+        st.write("Scored data with 'Approved' column:")
+        st.write(custom_data.head())
+
+        # Calculate the approval rate
+        approval_rate_calculated = custom_data['Approved'].mean() * 100
+        st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
+
+        # Count of approved and rejected forms
+        approved_count = custom_data['Approved'].sum()
+        rejected_count = len(custom_data) - approved_count
+        st.write(f"Number of Approved Forms: {approved_count}")
+        st.write(f"Number of Rejected Forms: {rejected_count}")
+
+        # Download the scored data
+        csv = custom_data.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Scored Data",
+            data=csv,
+            file_name='scored_data.csv',
+            mime='text/csv',
+        )
