@@ -145,8 +145,6 @@ st.write(f"Number of Accepted Applications: {approval_count}")
 st.write(f"Number of Rejected Applications: {rejection_count}")
 st.write(f"Approval Rate: {approval_rate:.2f}%")
 st.write(f"Rejection Rate: {rejection_rate:.2f}%")
-
-st.pyplot(fig)
    
 
 with tab2:
