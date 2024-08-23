@@ -128,7 +128,19 @@ with tab1:
         st.pyplot(fig)
     else:
         st.write("Not enough variables available for Correspondence Analysis.")
-
+        
+  # Target distribution
+    st.subheader("Target Distribution")
+    
+    # Calculate approval rate
+    approval_rate = data['Approved'].mean() * 100
+    st.write(f"Approval Rate: {approval_rate:.2f}%")
+    
+    fig, ax = plt.subplots()
+    sns.countplot(x='Approved', data=data, ax=ax)
+    ax.set_xlabel("Approved")
+    ax.set_ylabel("Count")
+    st.pyplot(fig)    
 
 with tab2:
     st.header("Modeling")
