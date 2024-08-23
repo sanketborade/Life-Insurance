@@ -146,19 +146,6 @@ st.write(f"Number of Rejected Applications: {rejection_count}")
 st.write(f"Approval Rate: {approval_rate:.2f}%")
 st.write(f"Rejection Rate: {rejection_rate:.2f}%")
 
-# Plot the distribution
-fig, ax = plt.subplots()
-sns.countplot(x='Approved', data=data, ax=ax)
-ax.set_xlabel("Approved (1) / Rejected (0)")
-ax.set_ylabel("Count")
-
-# Annotate bars with counts
-for p in ax.patches:
-    count = f'{p.get_height()}'
-    ax.annotate(count, (p.get_x() + p.get_width() / 2., p.get_height()), 
-                ha='center', va='center', fontsize=12, color='black', xytext=(0, 10),
-                textcoords='offset points')
-
 st.pyplot(fig)
    
 
