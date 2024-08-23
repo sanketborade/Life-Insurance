@@ -130,7 +130,7 @@ with tab1:
         st.write("Not enough variables available for Correspondence Analysis.")
         
   # Target distribution
-    st.subheader("Target Distribution")
+    st.subheader("Histogram For Approval & Rejection")
     
     # Calculate approval rate
     approval_rate = data['Approved'].mean() * 100
