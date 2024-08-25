@@ -53,7 +53,6 @@ with tab1:
 
     # Histograms for categorical features with percentages
     st.subheader("Histograms for Smoking Status, Medical History, and Alcohol Consumption")
-
     categorical_columns = ['Smoking Status', 'Medical History', 'Alcohol Consumption']
 
     for column in categorical_columns:
@@ -126,10 +125,34 @@ with tab1:
         ax.set_xlabel('Component 1')
         ax.set_ylabel('Component 2')
         st.pyplot(fig)
+
+        # Plot scree plot
+        st.subheader("Scree Plot")
+        fig, ax = plt.subplots()
+        eigenvalues = ca.eigenvalues_
+        ax.plot(range(1, len(eigenvalues) + 1), eigenvalues, marker='o')
+        ax.set_title("Scree Plot")
+        ax.set_xlabel("Component Number")
+        ax.set_ylabel("Eigenvalue")
+        st.pyplot(fig)
+
+        # Plot row contributions
+        st.subheader("Row Contributions")
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(ca.row_contributions(ca_data), cmap='coolwarm', ax=ax)
+        ax.set_title("Row Contributions")
+        st.pyplot(fig)
+
+        # Plot column contributions
+        st.subheader("Column Contributions")
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(ca.column_contributions(ca_data), cmap='coolwarm', ax=ax)
+        ax.set_title("Column Contributions")
+        st.pyplot(fig)
     else:
         st.write("Not enough variables available for Correspondence Analysis.")
-        
-  # Target distribution
+
+    # Target distribution
     st.subheader("Histogram For Approval & Rejection")
     
     # Calculate approval rate
@@ -140,8 +163,7 @@ with tab1:
     sns.countplot(x='Approved', data=data, ax=ax)
     ax.set_xlabel("Approved")
     ax.set_ylabel("Count")
-    st.pyplot(fig)    
-
+    st.pyplot(fig)
 with tab2:
     st.header("Modeling")
 
