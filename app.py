@@ -126,40 +126,6 @@ with tab1:
         ax.set_ylabel('Component 2')
         st.pyplot(fig)
 
-        # Plot scree plot
-        st.subheader("Scree Plot")
-        fig, ax = plt.subplots()
-        eigenvalues = ca.eigenvalues_
-        ax.plot(range(1, len(eigenvalues) + 1), eigenvalues, marker='o')
-        ax.set_title("Scree Plot")
-        ax.set_xlabel("Component Number")
-        ax.set_ylabel("Eigenvalue")
-        st.pyplot(fig)
-
-        # Calculate row contributions
-        row_contrib = row_coords**2 / row_coords.shape[0]
-        row_contrib = row_contrib.div(row_contrib.sum(axis=1), axis=0)
-
-        # Plot row contributions
-        st.subheader("Row Contributions")
-        fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(row_contrib, cmap='coolwarm', ax=ax)
-        ax.set_title("Row Contributions")
-        st.pyplot(fig)
-
-        # Calculate column contributions
-        col_contrib = col_coords**2 / col_coords.shape[0]
-        col_contrib = col_contrib.div(col_contrib.sum(axis=1), axis=0)
-
-        # Plot column contributions
-        st.subheader("Column Contributions")
-        fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(col_contrib, cmap='coolwarm', ax=ax)
-        ax.set_title("Column Contributions")
-        st.pyplot(fig)
-    else:
-        st.write("Not enough variables available for Correspondence Analysis.")
-
     # Target distribution
     st.subheader("Histogram For Approval & Rejection")
     
