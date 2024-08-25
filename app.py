@@ -198,7 +198,7 @@ with tab2:
     best_model_name = results_df.index[0]
     best_model_accuracy = results_df.iloc[0, 0]
     st.subheader(f"Best Model: {best_model_name}")
-    st.write(f"Accuracy: {best_model_accuracy:.2f}%")
+    st.write(f"Accuracy: {best_model_accuracy:.2f}")
 
     # Select and train the best model
     best_model = models[best_model_name]
