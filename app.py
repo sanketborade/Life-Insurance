@@ -136,17 +136,25 @@ with tab1:
         ax.set_ylabel("Eigenvalue")
         st.pyplot(fig)
 
+        # Calculate row contributions
+        row_contrib = row_coords**2 / row_coords.shape[0]
+        row_contrib = row_contrib.div(row_contrib.sum(axis=1), axis=0)
+
         # Plot row contributions
         st.subheader("Row Contributions")
         fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(ca.row_contributions(ca_data), cmap='coolwarm', ax=ax)
+        sns.heatmap(row_contrib, cmap='coolwarm', ax=ax)
         ax.set_title("Row Contributions")
         st.pyplot(fig)
+
+        # Calculate column contributions
+        col_contrib = col_coords**2 / col_coords.shape[0]
+        col_contrib = col_contrib.div(col_contrib.sum(axis=1), axis=0)
 
         # Plot column contributions
         st.subheader("Column Contributions")
         fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(ca.column_contributions(ca_data), cmap='coolwarm', ax=ax)
+        sns.heatmap(col_contrib, cmap='coolwarm', ax=ax)
         ax.set_title("Column Contributions")
         st.pyplot(fig)
     else:
@@ -164,6 +172,7 @@ with tab1:
     ax.set_xlabel("Approved")
     ax.set_ylabel("Count")
     st.pyplot(fig)
+
 with tab2:
     st.header("Modeling")
 
