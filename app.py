@@ -128,6 +128,47 @@ with tab1:
         st.pyplot(fig)
     else:
         st.write("Not enough variables available for Correspondence Analysis.")
+ Correlation Biplot using Correspondence Analysis
+    st.subheader("Correlation Biplot")
+
+    ca_columns = [
+        'Gender', 'Smoking Status', 'Medical History', 'Occupation',
+        'Term Length', 'Family History', 'Physical Activity Level',
+        'Alcohol Consumption', 'Premium Payment Frequency'
+    ]
+
+    # Filter out missing columns
+    ca_columns = [col for col in ca_columns if col in data.columns]
+
+    if len(ca_columns) > 1:
+        ca_data = data[ca_columns]
+
+        # Perform Correspondence Analysis
+        ca = prince.CA(n_components=2)
+        ca = ca.fit(ca_data)
+
+        # Get row and column coordinates
+        row_coords = ca.row_coordinates(ca_data)
+        col_coords = ca.column_coordinates(ca_data)
+
+        # Plot the biplot
+        fig, ax = plt.subplots(figsize=(10, 8))
+
+        # Plot the row coordinates
+        sns.scatterplot(x=row_coords[0], y=row_coords[1], hue=data['Approved'], ax=ax, marker='o', label='Rows')
+
+        # Plot the column coordinates
+        sns.scatterplot(x=col_coords[0], y=col_coords[1], ax=ax, marker='x', label='Columns', color='red')
+
+        for i, col in enumerate(ca_columns):
+            ax.text(col_coords[0][i], col_coords[1][i], col, color='red', fontsize=12)
+
+        ax.set_title('Correlation Biplot using Correspondence Analysis')
+        ax.set_xlabel('Component 1')
+        ax.set_ylabel('Component 2')
+        st.pyplot(fig)
+    else:
+        st.write("Not enough variables available for Correspondence Analysis.")
 
 with tab2:
     st.header("Modeling")
