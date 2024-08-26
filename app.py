@@ -40,6 +40,7 @@ st.title('Life Insurance Underwriting')
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["EDA", "Modeling", "Scoring"])
 
+# EDA Tab
 with tab1:
     st.header("Exploratory Data Analysis (EDA)")
 
@@ -86,63 +87,64 @@ with tab1:
 
         st.pyplot(fig)
 
-# Correspondence Analysis
-st.subheader("Correspondence Analysis")
+    # Correspondence Analysis
+    st.subheader("Correspondence Analysis")
 
-# Columns to include in the Correspondence Analysis
-ca_columns = [
-    'Gender', 'Smoking Status', 'Medical History', 'Occupation',
-    'Term Length', 'Family History', 'Physical Activity Level',
-    'Alcohol Consumption', 'Premium Payment Frequency'
-]
+    ca_columns = [
+        'Gender', 'Smoking Status', 'Medical History', 'Occupation',
+        'Term Length', 'Family History', 'Physical Activity Level',
+        'Alcohol Consumption', 'Premium Payment Frequency'
+    ]
 
-# Filter out missing columns to ensure they exist in the data
-ca_columns = [col for col in ca_columns if col in data.columns]
+    # Filter out missing columns
+    ca_columns = [col for col in ca_columns if col in data.columns]
 
-if len(ca_columns) > 1:
-    ca_data = data[ca_columns]
+    if len(ca_columns) > 1:
+        ca_data = data[ca_columns]
 
-    # Perform Correspondence Analysis
-    ca = prince.CA(n_components=2)
-    ca = ca.fit(ca_data)
+        # Perform Correspondence Analysis
+        ca = prince.CA(n_components=2)
+        ca = ca.fit(ca_data)
 
-    # Get row and column coordinates
-    row_coords = ca.row_coordinates(ca_data)
-    col_coords = ca.column_coordinates(ca_data)
+        # Get row and column coordinates
+        row_coords = ca.row_coordinates(ca_data)
+        col_coords = ca.column_coordinates(ca_data)
 
-    # Plot the biplot
-    fig, ax = plt.subplots(figsize=(14, 10))  # Increased figure size
+        # Plot the biplot
+        fig, ax = plt.subplots(figsize=(10, 8))
 
-    # Plot the row coordinates
-    sns.scatterplot(x=row_coords[0], y=row_coords[1], hue=data['Approved'], ax=ax, marker='o', label='Rows')
+        # Plot the row coordinates
+        sns.scatterplot(x=row_coords[0], y=row_coords[1], hue=data['Approved'], ax=ax, marker='o', label='Rows')
 
-    # Plot the column coordinates
-    sns.scatterplot(x=col_coords[0], y=col_coords[1], ax=ax, marker='x', label='Columns', color='red')
+        # Plot the column coordinates
+        sns.scatterplot(x=col_coords[0], y=col_coords[1], ax=ax, marker='x', label='Columns', color='red')
 
-    # Label the columns with larger font size and distinct color
-    for i, col in enumerate(ca_columns):
-        ax.text(col_coords[0][i], col_coords[1][i], col, color='red', fontsize=14, ha='right')
+        for i, col in enumerate(ca_columns):
+            ax.text(col_coords[0][i], col_coords[1][i], col, color='red', fontsize=12)
 
-    ax.set_title('Correspondence Analysis Biplot', fontsize=16)
-    ax.set_xlabel('Component 1', fontsize=14)
-    ax.set_ylabel('Component 2', fontsize=14)
-    st.pyplot(fig)
-else:
-    st.write("Not enough variables available for Correspondence Analysis.")
+        ax.set_title('Correspondence Analysis Biplot')
+        ax.set_xlabel('Component 1')
+        ax.set_ylabel('Component 2')
+        st.pyplot(fig)
+    else:
+        st.write("Not enough variables available for Correspondence Analysis.")
 
+    # Heatmap for Average Income, Coverage Amount, and BMI
+    st.subheader("Heatmap for Average Income, Coverage Amount, and BMI")
 
-    # Target distribution
-    st.subheader("Histogram For Approval & Rejection")
-    
-    # Calculate approval rate
-    approval_rate = data['Approved'].mean() * 100
-    st.write(f"Approval Rate: {approval_rate:.2f}%")
-    
-    fig, ax = plt.subplots()
-    sns.countplot(x='Approved', data=data, ax=ax)
-    ax.set_xlabel("Approved")
-    ax.set_ylabel("Count")
-    st.pyplot(fig)
+    # Select relevant columns
+    heatmap_columns = ['Average Income', 'Coverage Amount', 'BMI']
+
+    # Check if these columns are present in the dataset
+    heatmap_data = data[heatmap_columns].dropna()  # Drop any missing values
+
+    if not heatmap_data.empty:
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sns.heatmap(heatmap_data.corr(), annot=True, cmap='coolwarm', ax=ax)
+        ax.set_title("Correlation Heatmap")
+        st.pyplot(fig)
+    else:
+        st.write("Not enough data to create a heatmap.")
 
 with tab2:
     st.header("Modeling")
