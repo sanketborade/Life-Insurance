@@ -121,7 +121,7 @@ if len(ca_columns) > 1:
 
     # Label the columns with larger font size and distinct color
     for i, col in enumerate(ca_columns):
-        ax.text(col_coords[0][i], col_coords[1][i], col, color='blue', fontsize=14, ha='right')
+        ax.text(col_coords[0][i], col_coords[1][i], col, color='red', fontsize=14, ha='right')
 
     ax.set_title('Correspondence Analysis Biplot', fontsize=16)
     ax.set_xlabel('Component 1', fontsize=14)
