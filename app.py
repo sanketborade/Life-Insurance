@@ -130,10 +130,10 @@ with tab1:
         st.write("Not enough variables available for Correspondence Analysis.")
 
     # Heatmap for Average Income, Coverage Amount, and BMI
-    st.subheader("Heatmap for Average Income, Coverage Amount, and BMI")
+    st.subheader("Heatmap")
 
     # Select relevant columns
-    heatmap_columns = ['Average Income', 'Coverage Amount', 'BMI']
+    heatmap_columns = ['Annual Income', 'Coverage Amount', 'BMI']
 
     # Check if these columns are present in the dataset
     heatmap_data = data[heatmap_columns].dropna()  # Drop any missing values
