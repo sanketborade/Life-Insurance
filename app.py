@@ -129,23 +129,6 @@ with tab1:
     else:
         st.write("Not enough variables available for Correspondence Analysis.")
 
-    # Heatmap for Average Income, Coverage Amount, and BMI
-    st.subheader("Heatmap")
-
-    # Select relevant columns
-    heatmap_columns = ['Annual Income', 'Coverage Amount', 'BMI']
-
-    # Check if these columns are present in the dataset
-    heatmap_data = data[heatmap_columns].dropna()  # Drop any missing values
-
-    if not heatmap_data.empty:
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sns.heatmap(heatmap_data.corr(), annot=True, cmap='coolwarm', ax=ax)
-        ax.set_title("Correlation Heatmap")
-        st.pyplot(fig)
-    else:
-        st.write("Not enough data to create a heatmap.")
-
 with tab2:
     st.header("Modeling")
 
