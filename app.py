@@ -17,7 +17,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.decomposition import PCA
-
+from adjustText import adjust_text
 # Load the dataset
 data = pd.read_csv('approved_data.csv')
 st.write("Dataset loaded successfully!")
