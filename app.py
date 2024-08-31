@@ -16,6 +16,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.decomposition import PCA
 
 # Load the dataset
 data = pd.read_csv('approved_data.csv')
