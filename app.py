@@ -150,6 +150,20 @@ with tab1:
     plt.tight_layout()  # Adjust layout to fit everything nicely
     st.pyplot(plt)
 
+    # Target distribution
+    st.subheader("Histogram For Approval & Rejection")
+    
+    # Calculate approval rate
+    approval_rate = data['Approved'].mean() * 100
+    st.write(f"Approval Rate: {approval_rate:.2f}%")
+    
+    fig, ax = plt.subplots()
+    sns.countplot(x='Approved', data=data, ax=ax)
+    ax.set_xlabel("Approved")
+    ax.set_ylabel("Count")
+    st.pyplot(fig)
+
+
 with tab2:
     st.header("Modeling")
 
