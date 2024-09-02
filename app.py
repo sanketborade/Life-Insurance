@@ -231,6 +231,9 @@ with tab2:
 
 
 
+import streamlit as st
+import pandas as pd
+
 with tab3:
     st.header("Scoring")
 
@@ -245,14 +248,13 @@ with tab3:
 
         # Define approval criteria
         def approve_application(row):
-            # Example criteria (adjust based on actual underwriting policies)
             if (18 <= row['Age'] <= 65 and
-                row['Smoking Status'] == 0 and  # Assuming 0 is Non-Smoker
-                18.5 <= row['BMI'] <= 24.9 and  # Healthy BMI range
-                row['Medical History'] == 0 and  # Assuming 0 is No significant medical history
-                row['Alcohol Consumption'] <= 2 and  # Assuming 2 or less is moderate/no consumption
-                row['Family History of Disease'] == 0 and  # Assuming 0 is No significant family history
-                row['Occupation'] != 'High Risk'):  # Assuming 'High Risk' occupation is identified
+                row['Smoking Status'] == 0 and
+                18.5 <= row['BMI'] <= 24.9 and
+                row['Medical History'] == 0 and
+                row['Alcohol Consumption'] <= 2 and
+                row['Family History of Disease'] == 0 and
+                row['Occupation'] != 'High Risk'):
                 return 1
             else:
                 return 0
@@ -260,9 +262,13 @@ with tab3:
         # Apply criteria to create 'Approved' column
         custom_data['Approved'] = custom_data.apply(approve_application, axis=1)
 
+        # Function to highlight approved forms
+        def highlight_approved(s):
+            return ['background-color: lightgreen' if v == 1 else '' for v in s]
+
         # Display the updated data with the 'Approved' column
-        st.write("Scored data with 'Approved' column:")
-        st.write(custom_data.head())
+        st.write("Scored data with 'Approved' column (highlighted in green):")
+        st.dataframe(custom_data.style.apply(highlight_approved, subset=['Approved']))
 
         # Calculate the approval rate
         approval_rate_calculated = custom_data['Approved'].mean() * 100
@@ -282,3 +288,4 @@ with tab3:
             file_name='scored_data.csv',
             mime='text/csv',
         )
+
