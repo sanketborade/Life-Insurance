@@ -262,18 +262,6 @@ with tab3:
         # Apply criteria to create 'Approved' column
         custom_data['Approved'] = custom_data.apply(approve_application, axis=1)
 
-        # Function to highlight approved forms
-        def highlight_approved(s):
-            return ['background-color: lightgreen' if v == 1 else '' for v in s]
-
-        # Display the updated data with the 'Approved' column
-        st.write("Scored data with 'Approved' column (highlighted in green):")
-        st.dataframe(custom_data.style.apply(highlight_approved, subset=['Approved']))
-
-        # Calculate the approval rate
-        approval_rate_calculated = custom_data['Approved'].mean() * 100
-        st.write(f"Approval Rate: {approval_rate_calculated:.2f}%")
-
         # Count of approved and rejected forms
         approved_count = custom_data['Approved'].sum()
         rejected_count = len(custom_data) - approved_count
