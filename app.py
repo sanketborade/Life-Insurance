@@ -87,7 +87,9 @@ with tab1:
             ax.set_xticklabels(['Never (0)', 'Low (1)', 'Moderate (2)', 'High (3)'])
 
         st.pyplot(fig)
-        st.subheader("Detailed Correspondence Analysis with Original Labels")
+
+    # Detailed Correspondence Analysis
+    st.subheader("Detailed Correspondence Analysis")
 
     original_labels = {
         'Gender': ['Gender_Male', 'Gender_Female', 'Gender_Other'],
@@ -229,10 +231,6 @@ with tab2:
     best_model = models[best_model_name]
     best_model.fit(X_train, y_train)
 
-
-
-import streamlit as st
-import pandas as pd
 
 with tab3:
     st.header("Scoring")
