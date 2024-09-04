@@ -263,8 +263,15 @@ with tab3:
         # Count of approved and rejected forms
         approved_count = custom_data['Approved'].sum()
         rejected_count = len(custom_data) - approved_count
+        approval_rate = (approved_count / len(custom_data)) * 100
+
         st.write(f"Number of Approved Forms: {approved_count}")
         st.write(f"Number of Rejected Forms: {rejected_count}")
+        st.write(f"Approval Rate: {approval_rate:.2f}%")
+
+        # Display the scored data
+        st.subheader("Scored Data")
+        st.write(custom_data)
 
         # Download the scored data
         csv = custom_data.to_csv(index=False).encode('utf-8')
