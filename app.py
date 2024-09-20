@@ -153,7 +153,7 @@ with tab1:
     st.pyplot(plt)
 
     # Target distribution
-    st.subheader("Histogram For Approval & Rejection")
+    st.subheader("Approval & Rejection")
     
     # Calculate approval rate
     approval_rate = data['Approved'].mean() * 100
